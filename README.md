@@ -6,9 +6,9 @@
 - [Features](#features)
 - [Technologies](#technologies)
 - [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
+<!-- - [Project Structure](#project-structure)
 - [API Endpoints](#api-endpoints)
-- [Contributing](#contributing)
+- [Contributing](#contributing) -->
 
 ## Features
 
@@ -70,12 +70,12 @@
 ## Getting Started
 
 ### Prerequisites
-- Java 17+
+- Java 21+
 - Node.js and npm (for React)
 - SQL Server Express
 - Git
 
-### Backend Setup
+<!-- ### Backend Setup
 1. Clone the repository and navigate to the backend directory:
    ```bash
    git clone https://github.com/yourusername/Examinify.git
@@ -152,4 +152,4 @@
    ```bash
    git push origin feature/AmazingFeature
    ```
-5. Open a pull request.
+5. Open a pull request. -->
