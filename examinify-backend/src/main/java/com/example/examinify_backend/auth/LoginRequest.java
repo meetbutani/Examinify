@@ -1,4 +1,4 @@
-package com.example.examinify_backend;
+package com.example.examinify_backend.auth;
 
 public class LoginRequest {
     private String username;

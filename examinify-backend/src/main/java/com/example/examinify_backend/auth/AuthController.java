@@ -1,5 +1,7 @@
-package com.example.examinify_backend;
+package com.example.examinify_backend.auth;
 
+import com.example.examinify_backend.user.UserAccount;
+import com.example.examinify_backend.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

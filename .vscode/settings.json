@@ -8,5 +8,6 @@
         "**/Thumbs.db": true
     },
     "hide-files.files": [],
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.compile.nullAnalysis.mode": "automatic"
 }
