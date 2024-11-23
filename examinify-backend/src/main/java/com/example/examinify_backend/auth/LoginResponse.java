@@ -1,4 +1,4 @@
-package com.example.examinify_backend;
+package com.example.examinify_backend.auth;
 
 public class LoginResponse {
     private String token;

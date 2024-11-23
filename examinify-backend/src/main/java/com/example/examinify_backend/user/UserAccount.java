@@ -1,6 +1,5 @@
-package com.example.examinify_backend;
+package com.example.examinify_backend.user;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;

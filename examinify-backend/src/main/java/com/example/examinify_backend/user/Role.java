@@ -1,4 +1,4 @@
-package com.example.examinify_backend;
+package com.example.examinify_backend.user;
 
 public enum Role {
     ADMIN,
