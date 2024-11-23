@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -30,6 +31,9 @@ public class AuthController {
 
     @Autowired
     private JwtEncoder jwtEncoder;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -52,7 +56,7 @@ public class AuthController {
         if (userRepository.existsById(userAccount.getUsername())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exists");
         }
-        userAccount.setPassword(new BCryptPasswordEncoder().encode(userAccount.getPassword()));
+        userAccount.setPassword(passwordEncoder.encode(userAccount.getPassword()));
         userRepository.save(userAccount);
         return ResponseEntity.ok("User registered successfully");
     }
