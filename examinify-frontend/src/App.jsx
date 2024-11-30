@@ -8,6 +8,9 @@ import {
 import Login from "./components/Login";
 import ExamineeDashboard from "./components/ExamineeDashboard";
 import AdminDashboard from "./components/AdminDashboard";
+import { PermissionGuard } from "./components/PermissionGuard";
+import CreateStudentProfile from "./components/CreateStudentProfile";
+import ManageStudentProfiles from "./components/ManageStudentProfiles";
 
 const App = () => {
   return (
@@ -16,6 +19,22 @@ const App = () => {
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<ProtectedDashboard />} />
+        <Route
+          path="/CreateStudentProfile"
+          element={
+            <PermissionGuard requiredPermission={"ADMIN"}>
+              <CreateStudentProfile />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/ManageStudents"
+          element={
+            <PermissionGuard requiredPermission={"ADMIN"}>
+              <ManageStudentProfiles />
+            </PermissionGuard>
+          }
+        />
       </Routes>
     </Router>
   );

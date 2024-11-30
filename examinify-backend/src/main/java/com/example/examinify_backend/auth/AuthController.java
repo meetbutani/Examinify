@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -51,16 +52,6 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(token, user.getRole().name()));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserAccount userAccount) {
-        if (userRepository.existsById(userAccount.getUsername())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exists");
-        }
-        userAccount.setPassword(passwordEncoder.encode(userAccount.getPassword()));
-        userRepository.save(userAccount);
-        return ResponseEntity.ok("User registered successfully");
-    }
-
     private String generateToken(UserAccount user) {
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -68,9 +59,10 @@ public class AuthController {
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(36000))
                 .subject(user.getUsername())
-                .claim("role", user.getRole().name())
+                .claim("roles", List.of("ROLE_" + user.getRole().name())) // Add roles as a claim
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
+
 }

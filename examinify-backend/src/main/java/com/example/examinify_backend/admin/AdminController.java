@@ -1,18 +1,29 @@
 package com.example.examinify_backend.admin;
 
+import com.example.examinify_backend.student.StudentProfile;
+import com.example.examinify_backend.student.StudentProfileRepository;
+import com.example.examinify_backend.user.Role;
 import com.example.examinify_backend.user.UserAccount;
 import com.example.examinify_backend.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
+
+    @Autowired
+    private StudentProfileRepository studentProfileRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -20,14 +31,106 @@ public class AdminController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PostMapping("/addUser")
+    @PostMapping("/createStudentProfile")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> addUser(@RequestBody UserAccount newUser) {
-        if (userRepository.existsById(newUser.getUsername())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exists");
+    public ResponseEntity<String> createStudentProfile(@RequestBody StudentProfile studentProfile, Authentication authentication) {
+        String username = studentProfile.getEnrollmentNo() + "@" + studentProfile.getUniversityCollegeName();
+
+        if (userRepository.existsById(username) || studentProfileRepository.findByStudentId(username).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User account or student profile already exists");
         }
-        newUser.setPassword(passwordEncoder.encode(newUser.getPassword())); // Encrypt password
-        userRepository.save(newUser);
-        return ResponseEntity.ok("User added successfully");
+
+        UserAccount userAccount = new UserAccount();
+        userAccount.setUsername(username);
+        userAccount.setPassword(passwordEncoder.encode(studentProfile.getEnrollmentNo()));
+        userAccount.setRole(Role.EXAMINEE);
+        userRepository.save(userAccount);
+
+        studentProfile.setStudentId(username);
+        studentProfile.setCreatedBy(authentication.getName());
+        studentProfile.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+        studentProfileRepository.save(studentProfile);
+
+        return ResponseEntity.ok("Student profile created successfully");
     }
+
+    // Get all student profiles
+    @GetMapping("/getAllStudents")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<StudentProfile>> getAllStudents() {
+        List<StudentProfile> students = studentProfileRepository.findAll();
+        return ResponseEntity.ok(students);
+    }
+
+    // Update student profile
+    @PutMapping("/updateStudentProfile/{studentId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> updateStudentProfile(@PathVariable String studentId, @RequestBody StudentProfile updatedProfile) {
+        Optional<StudentProfile> existingProfileOpt = studentProfileRepository.findById(studentId);
+        if (existingProfileOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student profile not found");
+        }
+
+        StudentProfile existingProfile = existingProfileOpt.get();
+        existingProfile.setFirstname(updatedProfile.getFirstname());
+        existingProfile.setLastname(updatedProfile.getLastname());
+        existingProfile.setEmail(updatedProfile.getEmail());
+        existingProfile.setUniversityCollegeName(updatedProfile.getUniversityCollegeName());
+
+        studentProfileRepository.save(existingProfile);
+        return ResponseEntity.ok("Student profile updated successfully");
+    }
+
+    // Search students by firstname, lastname, or email
+    @GetMapping("/searchStudents")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<StudentProfile>> searchStudents(@RequestParam String query) {
+        List<StudentProfile> students = studentProfileRepository.findByFirstnameContainingIgnoreCaseOrLastnameContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query, query);
+        return ResponseEntity.ok(students);
+    }
+
+    // Filter students by university/college name
+    @GetMapping("/filterByCollege")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<StudentProfile>> filterByCollege(@RequestParam String universityCollegeName) {
+        List<StudentProfile> students = studentProfileRepository.findByUniversityCollegeName(universityCollegeName);
+        return ResponseEntity.ok(students);
+    }
+
+    // Delete student profile and associated user account
+    @DeleteMapping("/deleteStudentProfile/{studentId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteStudentProfile(@PathVariable String studentId) {
+        Optional<StudentProfile> existingProfileOpt = studentProfileRepository.findById(studentId);
+        if (existingProfileOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student profile not found");
+        }
+
+        // Delete the associated UserAccount
+        Optional<UserAccount> existingUserAccountOpt = userRepository.findByUsername(studentId);
+        // Deleting the UserAccount
+        existingUserAccountOpt.ifPresent(userAccount -> userRepository.delete(userAccount));
+
+        // Delete the StudentProfile
+        studentProfileRepository.delete(existingProfileOpt.get());
+
+        return ResponseEntity.ok("Student profile and associated user account deleted successfully");
+    }
+
+    // Delete multiple students and associated user accounts
+    @DeleteMapping("/deleteMultipleStudents")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteMultipleStudents(@RequestBody List<String> studentIds) {
+        // Delete the StudentProfiles
+        studentProfileRepository.deleteAllById(studentIds);
+
+        // Delete the associated UserAccounts first
+        for (String studentId : studentIds) {
+            Optional<UserAccount> userAccountOpt = userRepository.findByUsername(studentId);
+            userAccountOpt.ifPresent(userRepository::delete);
+        }
+
+        return ResponseEntity.ok("Selected students and associated user accounts deleted successfully");
+    }
+
 }
