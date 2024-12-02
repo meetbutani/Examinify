@@ -1,10 +1,9 @@
 package com.example.examinify_backend.student;
 
 import com.example.examinify_backend.user.UserAccount;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import java.sql.Timestamp;
 
@@ -12,19 +11,38 @@ import java.sql.Timestamp;
 public class StudentProfile {
 
     @Id
-    private String studentId; // Maps to UserAccount.username
+    @Column(name = "studentId", nullable = false)
+    private String studentId;
 
+    @Column(nullable = false)
     private String firstname;
+
+    @Column(nullable = false)
     private String lastname;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String enrollmentNo;
+
+    @Column(nullable = false)
     private String universityCollegeName;
+
+    @Column(name = "createdBy", nullable = false)
     private String createdBy;
+
+    @Column(nullable = false)
     private Timestamp createdDate;
 
     @OneToOne
     @JoinColumn(name = "studentId", referencedColumnName = "username", insertable = true, updatable = true)
-    private UserAccount userAccount; // Mapping the studentId to UserAccount
+    @Cascade(CascadeType.ALL)
+    private UserAccount studentAccount; // This maps to the UserAccount table for the foreign key
+
+    @ManyToOne
+    @JoinColumn(name = "createdBy", referencedColumnName = "username", insertable = false, updatable = false)
+    private UserAccount createdByAccount; // This maps to the UserAccount table for the foreign key
 
     // Constructors, Getters, and Setters
 
@@ -90,5 +108,13 @@ public class StudentProfile {
 
     public void setCreatedDate(Timestamp createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public UserAccount getStudentAccount() {
+        return studentAccount;
+    }
+
+    public UserAccount getCreatedByAccount() {
+        return createdByAccount;
     }
 }

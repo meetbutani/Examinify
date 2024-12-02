@@ -42,7 +42,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Optional<UserAccount> userOptional = userRepository.findByUsername(loginRequest.getUsername());
+        Optional<UserAccount> userOptional = userRepository.findById(loginRequest.getUsername());
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }

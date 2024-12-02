@@ -8,10 +8,14 @@ const AdminDashboard = () => {
     <div>
       <h2>Admin Dashboard</h2>
       <button onClick={() => navigate("/CreateStudentProfile")}>
-        CreateStudentProfile
+        Create Student Profile
       </button>
       <button onClick={() => navigate("/ManageStudents")}>
-        ManageStudents
+        Manage Students
+      </button>
+      <button onClick={() => navigate("/AddQuestion")}>Add Question</button>
+      <button onClick={() => navigate("/ManageQuestions")}>
+        Manage Questions
       </button>
     </div>
   );

@@ -11,6 +11,8 @@ import AdminDashboard from "./components/AdminDashboard";
 import { PermissionGuard } from "./components/PermissionGuard";
 import CreateStudentProfile from "./components/CreateStudentProfile";
 import ManageStudentProfiles from "./components/ManageStudentProfiles";
+import AddQuestion from "./components/AddQuestion";
+import ManageQuestions from "./components/ManageQuestions";
 
 const App = () => {
   return (
@@ -32,6 +34,22 @@ const App = () => {
           element={
             <PermissionGuard requiredPermission={"ADMIN"}>
               <ManageStudentProfiles />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/AddQuestion"
+          element={
+            <PermissionGuard requiredPermission={"ADMIN"}>
+              <AddQuestion />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/ManageQuestions"
+          element={
+            <PermissionGuard requiredPermission={"ADMIN"}>
+              <ManageQuestions />
             </PermissionGuard>
           }
         />

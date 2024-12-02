@@ -20,6 +20,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     @Autowired
@@ -32,11 +33,10 @@ public class AdminController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/createStudentProfile")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> createStudentProfile(@RequestBody StudentProfile studentProfile, Authentication authentication) {
         String username = studentProfile.getEnrollmentNo() + "@" + studentProfile.getUniversityCollegeName();
 
-        if (userRepository.existsById(username) || studentProfileRepository.findByStudentId(username).isPresent()) {
+        if (userRepository.existsById(username) || studentProfileRepository.findById(username).isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User account or student profile already exists");
         }
 
@@ -56,7 +56,6 @@ public class AdminController {
 
     // Get all student profiles
     @GetMapping("/getAllStudents")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<StudentProfile>> getAllStudents() {
         List<StudentProfile> students = studentProfileRepository.findAll();
         return ResponseEntity.ok(students);
@@ -64,7 +63,6 @@ public class AdminController {
 
     // Update student profile
     @PutMapping("/updateStudentProfile/{studentId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateStudentProfile(@PathVariable String studentId, @RequestBody StudentProfile updatedProfile) {
         Optional<StudentProfile> existingProfileOpt = studentProfileRepository.findById(studentId);
         if (existingProfileOpt.isEmpty()) {
@@ -83,7 +81,6 @@ public class AdminController {
 
     // Search students by firstname, lastname, or email
     @GetMapping("/searchStudents")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<StudentProfile>> searchStudents(@RequestParam String query) {
         List<StudentProfile> students = studentProfileRepository.findByFirstnameContainingIgnoreCaseOrLastnameContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query, query);
         return ResponseEntity.ok(students);
@@ -91,15 +88,13 @@ public class AdminController {
 
     // Filter students by university/college name
     @GetMapping("/filterByCollege")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<StudentProfile>> filterByCollege(@RequestParam String universityCollegeName) {
-        List<StudentProfile> students = studentProfileRepository.findByUniversityCollegeName(universityCollegeName);
+        List<StudentProfile> students = studentProfileRepository.findByUniversityCollegeNameContainingIgnoreCase(universityCollegeName);
         return ResponseEntity.ok(students);
     }
 
     // Delete student profile and associated user account
     @DeleteMapping("/deleteStudentProfile/{studentId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteStudentProfile(@PathVariable String studentId) {
         Optional<StudentProfile> existingProfileOpt = studentProfileRepository.findById(studentId);
         if (existingProfileOpt.isEmpty()) {
@@ -107,7 +102,7 @@ public class AdminController {
         }
 
         // Delete the associated UserAccount
-        Optional<UserAccount> existingUserAccountOpt = userRepository.findByUsername(studentId);
+        Optional<UserAccount> existingUserAccountOpt = userRepository.findById(studentId);
         // Deleting the UserAccount
         existingUserAccountOpt.ifPresent(userAccount -> userRepository.delete(userAccount));
 
@@ -119,18 +114,32 @@ public class AdminController {
 
     // Delete multiple students and associated user accounts
     @DeleteMapping("/deleteMultipleStudents")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteMultipleStudents(@RequestBody List<String> studentIds) {
         // Delete the StudentProfiles
         studentProfileRepository.deleteAllById(studentIds);
 
         // Delete the associated UserAccounts first
-        for (String studentId : studentIds) {
-            Optional<UserAccount> userAccountOpt = userRepository.findByUsername(studentId);
-            userAccountOpt.ifPresent(userRepository::delete);
+        List<UserAccount> userAccountsToDelete = userRepository.findAllById(studentIds);
+
+        if (userAccountsToDelete.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No students found with the given IDs.");
         }
+
+        userRepository.deleteAll(userAccountsToDelete);
 
         return ResponseEntity.ok("Selected students and associated user accounts deleted successfully");
     }
+//    public ResponseEntity<String> dseleteMultipleStudents(@RequestBody List<String> studentIds) {
+//        // Delete the StudentProfiles
+//        studentProfileRepository.deleteAllById(studentIds);
+//
+//        // Delete the associated UserAccounts first
+//        for (String studentId : studentIds) {
+//            Optional<UserAccount> userAccountOpt = userRepository.findByUsername(studentId);
+//            userAccountOpt.ifPresent(userRepository::delete);
+//        }
+//
+//        return ResponseEntity.ok("Selected students and associated user accounts deleted successfully");
+//    }
 
 }
