@@ -2,8 +2,6 @@ package com.example.examinify_backend.student;
 
 import com.example.examinify_backend.user.UserAccount;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import java.sql.Timestamp;
 
@@ -36,12 +34,11 @@ public class StudentProfile {
     private Timestamp createdDate;
 
     @OneToOne
-    @JoinColumn(name = "studentId", referencedColumnName = "username", insertable = true, updatable = true)
-    @Cascade(CascadeType.ALL)
+    @JoinColumn(name = "studentId", referencedColumnName = "username", insertable=false, updatable=false)
     private UserAccount studentAccount; // This maps to the UserAccount table for the foreign key
 
     @ManyToOne
-    @JoinColumn(name = "createdBy", referencedColumnName = "username", insertable = false, updatable = false)
+    @JoinColumn(name = "createdBy", referencedColumnName = "username", insertable=false, updatable=false)
     private UserAccount createdByAccount; // This maps to the UserAccount table for the foreign key
 
     // Constructors, Getters, and Setters

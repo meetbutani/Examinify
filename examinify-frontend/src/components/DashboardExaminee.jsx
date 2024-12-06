@@ -1,6 +1,6 @@
 import React from "react";
 
-const ExamineeDashboard = () => {
+const DashboardExaminee = () => {
   return (
     <div>
       <h2>Examinee Dashboard</h2>
@@ -9,4 +9,4 @@ const ExamineeDashboard = () => {
   );
 };
 
-export default ExamineeDashboard;
+export default DashboardExaminee;

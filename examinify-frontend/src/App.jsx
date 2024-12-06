@@ -6,13 +6,14 @@ import {
   Navigate,
 } from "react-router-dom";
 import Login from "./components/Login";
-import ExamineeDashboard from "./components/ExamineeDashboard";
-import AdminDashboard from "./components/AdminDashboard";
+import DashboardExaminee from "./components/DashboardExaminee";
+import DashboardAdmin from "./components/DashboardAdmin";
 import { PermissionGuard } from "./components/PermissionGuard";
 import CreateStudentProfile from "./components/CreateStudentProfile";
 import ManageStudentProfiles from "./components/ManageStudentProfiles";
 import AddQuestion from "./components/AddQuestion";
 import ManageQuestions from "./components/ManageQuestions";
+import ManageExams from "./components/ManageExams";
 
 const App = () => {
   return (
@@ -53,6 +54,14 @@ const App = () => {
             </PermissionGuard>
           }
         />
+        <Route
+          path="/ManageExams"
+          element={
+            <PermissionGuard requiredPermission={"ADMIN"}>
+              <ManageExams />
+            </PermissionGuard>
+          }
+        />
       </Routes>
     </Router>
   );
@@ -67,9 +76,9 @@ const ProtectedDashboard = () => {
   if (!user) return <Navigate to="/login" />;
 
   if (user.role === "ADMIN") {
-    return <AdminDashboard />;
+    return <DashboardAdmin />;
   } else if (user.role === "EXAMINEE") {
-    return <ExamineeDashboard />;
+    return <DashboardExaminee />;
   } else {
     return <Navigate to="/login" />;
   }

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const AdminDashboard = () => {
+const DashboardAdmin = () => {
   const navigate = useNavigate();
 
   return (
@@ -17,8 +17,9 @@ const AdminDashboard = () => {
       <button onClick={() => navigate("/ManageQuestions")}>
         Manage Questions
       </button>
+      <button onClick={() => navigate("/ManageExams")}>Manage Exam</button>
     </div>
   );
 };
 
-export default AdminDashboard;
+export default DashboardAdmin;

@@ -129,17 +129,5 @@ public class AdminController {
 
         return ResponseEntity.ok("Selected students and associated user accounts deleted successfully");
     }
-//    public ResponseEntity<String> dseleteMultipleStudents(@RequestBody List<String> studentIds) {
-//        // Delete the StudentProfiles
-//        studentProfileRepository.deleteAllById(studentIds);
-//
-//        // Delete the associated UserAccounts first
-//        for (String studentId : studentIds) {
-//            Optional<UserAccount> userAccountOpt = userRepository.findByUsername(studentId);
-//            userAccountOpt.ifPresent(userRepository::delete);
-//        }
-//
-//        return ResponseEntity.ok("Selected students and associated user accounts deleted successfully");
-//    }
 
 }
