@@ -12,10 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,19 +44,14 @@ public class ExamController {
         exam.setCreatedBy(authentication.getName());
         exam.setCreatedDate(new Timestamp(System.currentTimeMillis()));
         exam.setLastModifiedDate(new Timestamp(System.currentTimeMillis()));
+
+        // Validate that if endDateTime is set, startDateTime must also be set
+        if (exam.getEndDateTime() != null && exam.getStartDateTime() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Start date-time must be provided if end date-time is set.");
+        }
+
         examRepository.save(exam);
         return ResponseEntity.ok("Exam created successfully.");
-    }
-
-    @PostMapping("/addQuestion")
-    public ResponseEntity<String> addQuestionToExam(@RequestBody ExamQuestion examQuestion) {
-        examQuestionRepository.save(examQuestion);
-        return ResponseEntity.ok("Question added to exam successfully.");
-    }
-
-    @GetMapping("/{examId}/questions")
-    public ResponseEntity<List<ExamQuestion>> getExamQuestions(@PathVariable Integer examId) {
-        return ResponseEntity.ok(examQuestionRepository.findByExamId(examId));
     }
 
     @GetMapping("/{examId}")
@@ -67,6 +59,39 @@ public class ExamController {
         return examRepository.findById(examId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
+    @PostMapping("/addQuestion")
+    public ResponseEntity<String> addQuestionToExam(@RequestBody ExamQuestion examQuestion) {
+        if (examQuestionRepository.existsByExamIdAndQuestionId(examQuestion.getExamId(), examQuestion.getQuestionId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Question already added to this exam.");
+        }
+        examQuestionRepository.save(examQuestion);
+        return ResponseEntity.ok("Question added to exam successfully.");
+    }
+
+    @PatchMapping("/updateQuestionOrder")
+    public ResponseEntity<String> updateQuestionOrder(@RequestBody List<UpdateQuestionOrderDto> dtos) {
+        for (UpdateQuestionOrderDto dto : dtos) {
+            ExamQuestion examQuestion = examQuestionRepository.findById(dto.getExamQuestionId())
+                    .orElseThrow(() -> new RuntimeException("Exam Question not found"));
+
+            examQuestion.setQuestionOrder(dto.getNewOrder());
+            examQuestion.setMarks(dto.getMarks());
+            examQuestionRepository.save(examQuestion);
+        }
+        return ResponseEntity.ok("All changes saved successfully.");
+    }
+
+    @GetMapping("/{examId}/questions")
+    public ResponseEntity<List<ExamQuestion>> getExamQuestions(@PathVariable Integer examId) {
+        return ResponseEntity.ok(examQuestionRepository.findByExamIdOrderByQuestionOrder(examId));
+    }
+
+    @DeleteMapping("/removeQuestion/{examQuestionId}")
+    public ResponseEntity<Void> removeQuestionFromExam(@PathVariable Integer examQuestionId) {
+        examQuestionRepository.deleteById(examQuestionId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{examId}/results")
@@ -77,13 +102,12 @@ public class ExamController {
     @PostMapping("/{examId}/designTest")
     public ResponseEntity<String> designTest(
             @PathVariable Integer examId,
-            @RequestBody DesignTestRequest request) {
+            @RequestBody Map<String, Map<String, Integer>> categoryDifficultyCounts) {
 
         List<Question> questions = questionRepository.findAll();
 
-        // Filter questions by category and difficulty
-        List<Question> selectedQuestions = autoPickQuestions(
-                questions, request.getCategoryCounts(), request.getDifficultyCounts());
+        // Filter questions based on the new structure
+        List<Question> selectedQuestions = autoPickQuestions(questions, categoryDifficultyCounts);
 
         // Assign questions to the exam
         int order = 1;
@@ -100,28 +124,32 @@ public class ExamController {
 
     private List<Question> autoPickQuestions(
             List<Question> allQuestions,
-            Map<Category, Integer> categoryCounts,
-            Map<Difficulty, Integer> difficultyCounts) {
+            Map<String, Map<String, Integer>> categoryDifficultyCounts) {
 
         List<Question> selectedQuestions = new ArrayList<>();
 
         // Group questions by category and difficulty
-        Map<Category, List<Question>> questionsByCategory = allQuestions.stream()
-                .collect(Collectors.groupingBy(Question::getCategory));
+        Map<Category, Map<Difficulty, List<Question>>> questionsByCategoryAndDifficulty =
+                allQuestions.stream().collect(Collectors.groupingBy(
+                        Question::getCategory,
+                        Collectors.groupingBy(Question::getDifficulty)
+                ));
 
-        Map<Difficulty, List<Question>> questionsByDifficulty = allQuestions.stream()
-                .collect(Collectors.groupingBy(Question::getDifficulty));
+        // Pick questions for each category-difficulty combination
+        for (String category : categoryDifficultyCounts.keySet()) {
+            Category categoryEnum = Category.valueOf(category);
+            Map<String, Integer> difficultyCounts = categoryDifficultyCounts.get(category);
 
-        // Pick questions for each category
-        for (Category category : categoryCounts.keySet()) {
-            List<Question> categoryQuestions = questionsByCategory.getOrDefault(category, new ArrayList<>());
-            selectedQuestions.addAll(pickRandomQuestions(categoryQuestions, categoryCounts.get(category)));
-        }
+            for (String difficulty : difficultyCounts.keySet()) {
+                Difficulty difficultyEnum = Difficulty.valueOf(difficulty);
+                int count = difficultyCounts.get(difficulty);
 
-        // Pick questions for each difficulty
-        for (Difficulty difficulty : difficultyCounts.keySet()) {
-            List<Question> difficultyQuestions = questionsByDifficulty.getOrDefault(difficulty, new ArrayList<>());
-            selectedQuestions.addAll(pickRandomQuestions(difficultyQuestions, difficultyCounts.get(difficulty)));
+                List<Question> pool = questionsByCategoryAndDifficulty
+                        .getOrDefault(categoryEnum, new HashMap<>())
+                        .getOrDefault(difficultyEnum, new ArrayList<>());
+
+                selectedQuestions.addAll(pickRandomQuestions(pool, count));
+            }
         }
 
         return selectedQuestions;

@@ -10,6 +10,8 @@ const ManageExams = () => {
     duration: 60,
     passingCriteria: 3,
     type: "MCQ",
+    startDateTime: "",
+    endDateTime: "",
   });
 
   const token = localStorage.getItem("token");
@@ -36,17 +38,29 @@ const ManageExams = () => {
 
   const createExam = async () => {
     try {
+      const payload = { ...newExam };
+      if (!payload.startDateTime) delete payload.startDateTime;
+      if (!payload.endDateTime) delete payload.endDateTime;
+
       await axios.post(
         "http://localhost:8081/api/admin/exams/create",
-        newExam,
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+
       fetchExams();
-      setNewExam({ name: "", duration: 0, passingCriteria: 0, type: "MCQ" });
+      setNewExam({
+        name: "",
+        duration: 60,
+        passingCriteria: 3,
+        type: "MCQ",
+        startDateTime: "",
+        endDateTime: "",
+      });
     } catch (error) {
       console.error("Failed to create exam.", error);
     }
@@ -89,6 +103,22 @@ const ManageExams = () => {
           <option value="MCQ">MCQ</option>
           <option value="PROGRAMMING">Programming</option>
         </select>
+        <input
+          type="datetime-local"
+          placeholder="Start Date-Time (Optional)"
+          value={newExam.startDateTime}
+          onChange={(e) =>
+            setNewExam({ ...newExam, startDateTime: e.target.value })
+          }
+        />
+        <input
+          type="datetime-local"
+          placeholder="End Date-Time (Optional)"
+          value={newExam.endDateTime}
+          onChange={(e) =>
+            setNewExam({ ...newExam, endDateTime: e.target.value })
+          }
+        />
         <button onClick={createExam}>Create</button>
       </div>
       <div>
@@ -100,6 +130,9 @@ const ManageExams = () => {
               <th>Duration</th>
               <th>Passing Criteria</th>
               <th>Type</th>
+              <th>Start Date-Time</th>
+              <th>End Date-Time</th>
+              <th>Declared</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -110,6 +143,9 @@ const ManageExams = () => {
                 <td>{exam.duration}</td>
                 <td>{exam.passingCriteria}</td>
                 <td>{exam.type}</td>
+                <td>{exam.startDateTime || "Not Set"}</td>
+                <td>{exam.endDateTime || "Not Set"}</td>
+                <td>{exam.startDateTime ? "Yes" : "No"}</td>
                 <td>
                   <button onClick={() => setSelectedExam(exam)}>Manage</button>
                 </td>

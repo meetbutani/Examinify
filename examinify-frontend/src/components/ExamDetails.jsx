@@ -55,13 +55,50 @@ const ExamDetails = ({ exam, onClose }) => {
     try {
       await axios.post(
         `http://localhost:8081/api/admin/exams/addQuestion`,
-        { examId: exam.id, questionId, questionOrder },
+        { examId: exam.id, questionId, questionOrder, marks: 1 },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log("Question added successfully.");
       fetchSelectedQuestions();
     } catch (error) {
-      console.error("Failed to add question to exam.", error);
+      if (error.response.status === 409) {
+        console.log("Question already added to this exam.");
+      } else {
+        console.error("Failed to add question to exam.", error);
+      }
+    }
+  };
+
+  const deleteQuestionFromExam = async (examQuestionId) => {
+    try {
+      await axios.delete(
+        `http://localhost:8081/api/admin/exams/removeQuestion/${examQuestionId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log("Question deleted successfully.");
+      fetchSelectedQuestions();
+    } catch (error) {
+      console.error("Failed to delete question from exam.", error);
+    }
+  };
+
+  const saveChanges = async () => {
+    const updates = selectedQuestions.map((q) => ({
+      examQuestionId: q.id,
+      newOrder: q.questionOrder,
+      marks: q.marks,
+    }));
+
+    try {
+      await axios.patch(
+        "http://localhost:8081/api/admin/exams/updateQuestionOrder",
+        updates,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log("Changes saved successfully.");
+      fetchSelectedQuestions();
+    } catch (error) {
+      console.error("Failed to save changes.", error);
     }
   };
 
@@ -70,13 +107,51 @@ const ExamDetails = ({ exam, onClose }) => {
       <h3>Manage Exam: {exam.name}</h3>
       <button onClick={onClose}>Close</button>
       <h4>Exam Questions</h4>
-      <ul>
-        {selectedQuestions.map((q) => (
-          <li key={q.id}>
-            {q.questionOrder} | {q.questionIdQuestion.text}
-          </li>
-        ))}
-      </ul>
+      <table>
+        <tbody>
+          {selectedQuestions.map((q) => (
+            <tr key={q.id}>
+              <td>
+                <input
+                  type="number"
+                  value={q.questionOrder}
+                  onChange={(e) =>
+                    setSelectedQuestions((prev) =>
+                      prev.map((item) =>
+                        item.id === q.id
+                          ? { ...item, questionOrder: e.target.value }
+                          : item
+                      )
+                    )
+                  }
+                />
+              </td>
+              <td>{q.questionIdQuestion.text}</td>
+              <td>
+                <input
+                  type="number"
+                  value={q.marks}
+                  onChange={(e) =>
+                    setSelectedQuestions((prev) =>
+                      prev.map((item) =>
+                        item.id === q.id
+                          ? { ...item, marks: e.target.value }
+                          : item
+                      )
+                    )
+                  }
+                />
+              </td>
+              <td>
+                <button onClick={() => deleteQuestionFromExam(q.id)}>
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button onClick={saveChanges}>Save Changes</button>
       <h4>All Questions</h4>
       <div>
         <select

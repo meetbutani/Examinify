@@ -24,6 +24,12 @@ public class Exam {
     @Column(nullable = false)
     private ExamType type; // MCQ or PROGRAMMING
 
+    @Column(nullable = true)
+    private Timestamp startDateTime;
+
+    @Column(nullable = true)
+    private Timestamp endDateTime;
+
     @Column(name = "createdBy", nullable = false)
     private String createdBy;
 
@@ -79,6 +85,22 @@ public class Exam {
         this.type = type;
     }
 
+    public Timestamp getStartDateTime() {
+        return startDateTime;
+    }
+
+    public void setStartDateTime(Timestamp startDateTime) {
+        this.startDateTime = startDateTime;
+    }
+
+    public Timestamp getEndDateTime() {
+        return endDateTime;
+    }
+
+    public void setEndDateTime(Timestamp endDateTime) {
+        this.endDateTime = endDateTime;
+    }
+
     public String getCreatedBy() {
         return createdBy;
     }
@@ -110,4 +132,9 @@ public class Exam {
     public void setCreatedByAccount(UserAccount createdByAccount) {
         this.createdByAccount = createdByAccount;
     }
+
+    public boolean isDeclared() {
+        return startDateTime != null;
+    }
+
 }

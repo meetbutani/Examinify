@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import EditQuestion from "./EditQuestion";
 
 const ManageQuestions = () => {
   const [questions, setQuestions] = useState([]);
@@ -7,6 +8,7 @@ const ManageQuestions = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("");
   const [message, setMessage] = useState("");
+  const [editQuestionId, setEditQuestionId] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -85,24 +87,6 @@ const ManageQuestions = () => {
     }
   };
 
-  const handleEditQuestion = async (questionId, updatedQuestion) => {
-    try {
-      await axios.put(
-        `http://localhost:8081/api/admin/updateQuestion/${questionId}`,
-        updatedQuestion,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setMessage("Question updated successfully.");
-      fetchAllQuestions(); // Refresh question list
-    } catch (error) {
-      setMessage("Failed to update question.");
-    }
-  };
-
   const handleSelectQuestion = (questionId) => {
     setSelectedQuestions((prevSelected) =>
       prevSelected.includes(questionId)
@@ -157,21 +141,26 @@ const ManageQuestions = () => {
               Delete
             </button>
             <button
-              onClick={() =>
-                handleEditQuestion(question.id, {
-                  text: "Updated question text", // Replace with form data
-                  category: "LOGICAL",
-                  difficulty: "MEDIUM",
-                  correctAnswer: "Option1",
-                  options: JSON.stringify(["Option1", "Option2"]),
-                })
-              }
+              onClick={() => {
+                setEditQuestionId(null);
+                setEditQuestionId(question.id);
+              }}
             >
               Edit
             </button>
           </li>
         ))}
       </ul>
+      {editQuestionId && (
+        <EditQuestion
+          question={questions.find((q) => q.id === editQuestionId)}
+          onCancel={() => setEditQuestionId(null)}
+          onSave={() => {
+            fetchAllQuestions();
+            setEditQuestionId(null);
+          }}
+        />
+      )}
     </div>
   );
 };

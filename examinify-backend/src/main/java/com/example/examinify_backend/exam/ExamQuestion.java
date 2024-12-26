@@ -4,6 +4,10 @@ import com.example.examinify_backend.question.Question;
 import jakarta.persistence.*;
 
 @Entity
+@Table(
+        name = "exam_question",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"examId", "questionId"})
+)
 public class ExamQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,16 +22,18 @@ public class ExamQuestion {
     @Column(name = "questionId", nullable = false)
     private Integer questionId;
 
+    @Column(nullable = false)
+    private Integer marks; // Marks for the question
+
     @ManyToOne
     @JoinColumn(name = "examId", referencedColumnName = "id", insertable = false, updatable = false)
-    private Exam examIdExam; // This maps to the Exam table for the foreign key
+    private Exam examIdExam;
 
     @ManyToOne
     @JoinColumn(name = "questionId", referencedColumnName = "id", insertable = false, updatable = false)
-    private Question questionIdQuestion; // This maps to the Question table for the foreign key
+    private Question questionIdQuestion;
 
     // Getters and setters...
-
     public Integer getId() {
         return id;
     }
@@ -58,6 +64,14 @@ public class ExamQuestion {
 
     public void setQuestionId(Integer questionId) {
         this.questionId = questionId;
+    }
+
+    public Integer getMarks() {
+        return marks;
+    }
+
+    public void setMarks(Integer marks) {
+        this.marks = marks;
     }
 
     public Exam getExamIdExam() {
