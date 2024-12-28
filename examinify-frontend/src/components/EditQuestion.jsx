@@ -75,7 +75,7 @@ const EditQuestion = ({ question, onCancel, onSave }) => {
       </select>
       {[...Array(4)].map((_, index) => (
         <input
-          key={index}
+          key={"opt" + index}
           type="text"
           placeholder={`Option ${index + 1}`}
           value={formData.options[index] || ""}

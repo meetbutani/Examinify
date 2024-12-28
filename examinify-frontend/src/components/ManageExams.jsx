@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ExamDetails from "./ExamDetails";
+import AssignStudents from "./AssignStudents";
 
 const ManageExams = () => {
   const [exams, setExams] = useState([]);
@@ -87,7 +88,7 @@ const ManageExams = () => {
         />
         <input
           type="number"
-          placeholder="Passing Criteria (%)"
+          placeholder="Passing Criteria"
           value={newExam.passingCriteria}
           onChange={(e) =>
             setNewExam({
@@ -158,6 +159,11 @@ const ManageExams = () => {
         <ExamDetails
           exam={selectedExam}
           onClose={() => setSelectedExam(null)}
+        />
+      )}
+      {selectedExam && (
+        <AssignStudents
+          examId={selectedExam.id}
         />
       )}
     </div>

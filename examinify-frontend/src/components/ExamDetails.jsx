@@ -7,13 +7,14 @@ const ExamDetails = ({ exam, onClose }) => {
   const [questionOrder, setQuestionOrder] = useState(1);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [filters, setFilters] = useState({ category: "", difficulty: "" });
-
+  const [editableExam, setEditableExam] = useState({ ...exam });
+  
   const token = localStorage.getItem("token");
-
+  
   useEffect(() => {
     fetchQuestions();
   }, [filters]);
-
+  
   useEffect(() => {
     fetchSelectedQuestions();
   }, []);
@@ -82,6 +83,22 @@ const ExamDetails = ({ exam, onClose }) => {
     }
   };
 
+  const updateExamDetails = async () => {
+    try {
+      await axios.put(
+        `http://localhost:8081/api/admin/exams/${editableExam.id}`,
+        editableExam,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("Exam updated successfully.");
+      onClose(); // Close the modal after successful update
+    } catch (error) {
+      console.error("Failed to update exam.", error);
+    }
+  };
+
   const saveChanges = async () => {
     const updates = selectedQuestions.map((q) => ({
       examQuestionId: q.id,
@@ -105,7 +122,95 @@ const ExamDetails = ({ exam, onClose }) => {
   return (
     <div>
       <h3>Manage Exam: {exam.name}</h3>
-      <button onClick={onClose}>Close</button>
+      <div>
+        <h3>Edit Exam: {editableExam.name}</h3>
+        <label>
+          Name:
+          <input
+            type="text"
+            value={editableExam.name}
+            onChange={(e) =>
+              setEditableExam((prev) => ({ ...prev, name: e.target.value }))
+            }
+          />
+        </label>
+        <label>
+          Duration (mins):
+          <input
+            type="number"
+            value={editableExam.duration}
+            onChange={(e) =>
+              setEditableExam((prev) => ({
+                ...prev,
+                duration: parseInt(e.target.value),
+              }))
+            }
+          />
+        </label>
+        <label>
+          Passing Criteria:
+          <input
+            type="number"
+            value={editableExam.passingCriteria}
+            onChange={(e) =>
+              setEditableExam((prev) => ({
+                ...prev,
+                passingCriteria: parseInt(e.target.value),
+              }))
+            }
+          />
+        </label>
+        <label>
+          Type:
+          <select
+            value={editableExam.type}
+            onChange={(e) =>
+              setEditableExam((prev) => ({ ...prev, type: e.target.value }))
+            }
+          >
+            <option value="MCQ">MCQ</option>
+            <option value="PROGRAMMING">Programming</option>
+          </select>
+        </label>
+        <label>
+          Start Date-Time:
+          <input
+            type="datetime-local"
+            value={
+              editableExam.startDateTime
+                ? new Date(editableExam.startDateTime)
+                    .toISOString()
+                    .slice(0, 16)
+                : ""
+            }
+            onChange={(e) =>
+              setEditableExam((prev) => ({
+                ...prev,
+                startDateTime: e.target.value,
+              }))
+            }
+          />
+        </label>
+        <label>
+          End Date-Time:
+          <input
+            type="datetime-local"
+            value={
+              editableExam.endDateTime
+                ? new Date(editableExam.endDateTime).toISOString().slice(0, 16)
+                : ""
+            }
+            onChange={(e) =>
+              setEditableExam((prev) => ({
+                ...prev,
+                endDateTime: e.target.value,
+              }))
+            }
+          />
+        </label>
+        <button onClick={updateExamDetails}>Save Changes</button>
+        <button onClick={onClose}>Cancel</button>
+      </div>
       <h4>Exam Questions</h4>
       <table>
         <tbody>

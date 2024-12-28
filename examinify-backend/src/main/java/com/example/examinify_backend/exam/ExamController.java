@@ -4,6 +4,8 @@ import com.example.examinify_backend.question.Category;
 import com.example.examinify_backend.question.Difficulty;
 import com.example.examinify_backend.question.Question;
 import com.example.examinify_backend.question.QuestionRepository;
+import com.example.examinify_backend.student.StudentProfile;
+import com.example.examinify_backend.student.StudentProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,12 @@ public class ExamController {
 
     @Autowired
     private ExamResultRepository examResultRepository;
+
+    @Autowired
+    private StudentProfileRepository studentProfileRepository;
+
+    @Autowired
+    private ExamStudentRepository examStudentRepository;
 
     // Get all student profiles
     @GetMapping("/")
@@ -60,6 +68,25 @@ public class ExamController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
+
+    @PutMapping("/{examId}")
+    public ResponseEntity<String> updateExam(@PathVariable Integer examId, @RequestBody Exam updatedExam, Authentication authentication) {
+        return examRepository.findById(examId)
+                .map(existingExam -> {
+                    existingExam.setName(updatedExam.getName());
+                    existingExam.setDuration(updatedExam.getDuration());
+                    existingExam.setPassingCriteria(updatedExam.getPassingCriteria());
+                    existingExam.setType(updatedExam.getType());
+                    existingExam.setStartDateTime(updatedExam.getStartDateTime());
+                    existingExam.setEndDateTime(updatedExam.getEndDateTime());
+                    existingExam.setLastModifiedDate(new Timestamp(System.currentTimeMillis()));
+
+                    examRepository.save(existingExam);
+                    return ResponseEntity.ok("Exam updated successfully.");
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Exam not found."));
+    }
+
 
     @PostMapping("/addQuestion")
     public ResponseEntity<String> addQuestionToExam(@RequestBody ExamQuestion examQuestion) {
@@ -97,6 +124,37 @@ public class ExamController {
     @GetMapping("/{examId}/results")
     public ResponseEntity<List<ExamResult>> getExamResults(@PathVariable Integer examId) {
         return ResponseEntity.ok(examResultRepository.findByExamId(examId));
+    }
+
+    @GetMapping("/students")
+    public List<StudentProfile> getAllStudents() {
+        return studentProfileRepository.findAll();
+    }
+
+    @GetMapping("/students/{examId}")
+    public List<ExamStudent> getStudentsForExam(@PathVariable Integer examId) {
+        return examStudentRepository.findByExamId(examId);
+    }
+
+    @PostMapping("/remove-students/{examId}")
+    public ResponseEntity<?> removeStudentsFromExam(@PathVariable Integer examId, @RequestBody List<String> studentIds) {
+        List<ExamStudent> studentsToDelete = examStudentRepository.findByExamIdAndStudentIdIn(examId, studentIds);
+        examStudentRepository.deleteAll(studentsToDelete);
+        return ResponseEntity.ok("Selected students removed successfully.");
+    }
+
+    @PostMapping("/assign-students/{examId}")
+    public ResponseEntity<?> assignStudentsToExam(@PathVariable Integer examId, @RequestBody List<String> studentIds) {
+        List<ExamStudent> examStudents = studentIds.stream()
+                .map(studentId -> {
+                    ExamStudent examStudent = new ExamStudent();
+                    examStudent.setExamId(examId);
+                    examStudent.setStudentId(studentId);
+                    return examStudent;
+                })
+                .collect(Collectors.toList());
+        examStudentRepository.saveAll(examStudents);
+        return ResponseEntity.ok("Students assigned successfully.");
     }
 
     @PostMapping("/{examId}/designTest")
