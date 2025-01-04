@@ -1,0 +1,63 @@
+/* General container */
+.dashboard-container {
+    padding: 20px;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+/* Headings */
+.dashboard-heading {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.welcome-message {
+    font-size: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.exams-heading {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+/* Exams Table */
+.exams-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.exams-table th,
+.exams-table td {
+    border: 1px solid #333333;
+    padding: 10px;
+    text-align: left;
+}
+
+.exams-table th {
+    background-color: #252525;
+    color: #e0e0e0;
+}
+
+.exams-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+.open-exam-button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.open-exam-button:hover {
+    background-color: #0056b3;
+}

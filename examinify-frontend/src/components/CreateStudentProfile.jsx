@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "../assets/css/CreateStudentProfile.css";
 
 const CreateStudentProfile = () => {
   const generateRandomPassword = (length) => {
@@ -11,7 +12,7 @@ const CreateStudentProfile = () => {
     }
     return password;
   };
-  
+
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -47,11 +48,12 @@ const CreateStudentProfile = () => {
   };
 
   return (
-    <div>
-      <h2>Create Student Profile</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="profile-container">
+      <h2 className="profile-heading">Create Student Profile</h2>
+      <form className="profile-form" onSubmit={handleSubmit}>
         <input
           type="text"
+          className="profile-input"
           name="firstname"
           placeholder="First Name"
           value={formData.firstname}
@@ -60,6 +62,7 @@ const CreateStudentProfile = () => {
         />
         <input
           type="text"
+          className="profile-input"
           name="lastname"
           placeholder="Last Name"
           value={formData.lastname}
@@ -68,6 +71,7 @@ const CreateStudentProfile = () => {
         />
         <input
           type="email"
+          className="profile-input"
           name="email"
           placeholder="Email"
           value={formData.email}
@@ -76,6 +80,7 @@ const CreateStudentProfile = () => {
         />
         <input
           type="text"
+          className="profile-input"
           name="enrollmentNo"
           placeholder="Enrollment No"
           value={formData.enrollmentNo}
@@ -84,6 +89,7 @@ const CreateStudentProfile = () => {
         />
         <input
           type="text"
+          className="profile-input"
           name="universityCollegeName"
           placeholder="University/College Name"
           value={formData.universityCollegeName}
@@ -92,15 +98,18 @@ const CreateStudentProfile = () => {
         />
         <input
           type="password"
+          className="profile-input"
           name="password"
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
           required
         />
-        <button type="submit">Create Profile</button>
+        <button type="submit" className="profile-button">
+          Create Profile
+        </button>
       </form>
-      {message && <p>{message}</p>}
+      {message && <p className="profile-message">{message}</p>}
     </div>
   );
 };

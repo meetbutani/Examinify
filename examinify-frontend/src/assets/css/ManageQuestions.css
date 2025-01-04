@@ -1,0 +1,99 @@
+/* ManageQuestions.css */
+
+/* General container styles */
+.manage-questions-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+.manage-questions-heading {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Filters */
+.filters-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-select {
+    padding: 10px;
+    background-color: #252525;
+    border: 1px solid #333333;
+    color: #e0e0e0;
+    border-radius: 5px;
+}
+
+.filter-button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Message text */
+.message-text {
+    color: #ff4d4d;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Table */
+.questions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.questions-table th,
+.questions-table td {
+    border: 1px solid #333333;
+    padding: 10px;
+    text-align: left;
+}
+
+.questions-table th {
+    background-color: #252525;
+}
+
+.questions-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+/* Buttons */
+.delete-selected-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.action-button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 5px;
+    border: none;
+}
+
+.delete-action {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.edit-action {
+    background-color: #4caf50;
+    color: white;
+}

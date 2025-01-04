@@ -1,0 +1,86 @@
+/* ManageExams.css */
+
+/* General container styles */
+.manage-exams-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+.manage-exams-heading {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Create Exam Form */
+.create-exam-form {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.exam-input,
+.exam-select {
+    padding: 10px;
+    background-color: #252525;
+    border: 1px solid #333333;
+    color: #e0e0e0;
+    border-radius: 5px;
+    flex: 1 1 200px;
+}
+
+.create-exam-button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1 1 100px;
+}
+
+/* Exam Table */
+.exam-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.exam-table th,
+.exam-table td {
+    border: 1px solid #333333;
+    padding: 10px;
+    text-align: left;
+}
+
+.exam-table th {
+    background-color: #252525;
+}
+
+.exam-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+/* Buttons */
+.exam-action-button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+}
+
+.delete-button {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.result-button {
+    background-color: #4caf50;
+    color: white;
+}

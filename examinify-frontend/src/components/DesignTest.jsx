@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "../assets/css/DesignTest.css";
 
 const DesignTest = ({ examId }) => {
   const [questionsConfig, setQuestionsConfig] = useState({
@@ -49,16 +50,17 @@ const DesignTest = ({ examId }) => {
   };
 
   return (
-    <div>
-      <h3>Design Test</h3>
+    <div className="design-test-container">
+      <h3 className="design-test-heading">Design Test</h3>
       {Object.keys(questionsConfig).map((category) => (
-        <div key={category} style={{ marginBottom: "20px" }}>
-          <h4>{category}</h4>
+        <div className="category-container" key={category}>
+          <h4 className="category-title">{category}</h4>
           {Object.keys(questionsConfig[category]).map((difficulty) => (
-            <div key={difficulty} style={{ marginLeft: "20px" }}>
-              <label>
+            <div className="difficulty-input-container" key={difficulty}>
+              <label className="difficulty-label">
                 {difficulty}:
                 <input
+                  className="difficulty-input"
                   type="number"
                   min="0"
                   value={questionsConfig[category][difficulty]}
@@ -71,7 +73,9 @@ const DesignTest = ({ examId }) => {
           ))}
         </div>
       ))}
-      <button onClick={handleSubmit}>Submit</button>
+      <button className="submit-button" onClick={handleSubmit}>
+        Submit
+      </button>
     </div>
   );
 };

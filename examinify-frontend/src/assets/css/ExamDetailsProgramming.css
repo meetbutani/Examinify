@@ -1,0 +1,122 @@
+/* General container */
+.exam-details-container {
+    padding: 20px;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-radius: 10px;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.exam-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Edit exam form */
+.exam-edit-container {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.exam-input,
+.exam-select {
+    padding: 10px;
+    background-color: #252525;
+    border: 1px solid #333333;
+    color: #e0e0e0;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.save-changes-button,
+.cancel-button,
+.save-questions-button {
+    padding: 10px 15px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-changes-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+/* Marks input and question order input fields */
+.marks-input,
+.question-order-input {
+    width: 100%;
+    max-width: 100px;
+    /* Adjust width to fit in the table */
+    padding: 5px 10px;
+    background-color: #252525;
+    border: 1px solid #333333;
+    color: #e0e0e0;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.marks-input:focus,
+.question-order-input:focus {
+    outline: none;
+    border-color: #007bff;
+    /* Highlighted border on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Questions table */
+.questions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.questions-table th,
+.questions-table td {
+    border: 1px solid #333333;
+    padding: 10px;
+}
+
+.questions-table th {
+    background-color: #252525;
+}
+
+.questions-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+/* Buttons */
+.add-question-button,
+.delete-question-button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+}
+
+.add-question-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.delete-question-button {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.save-questions-button {
+    background-color: #4caf50;
+    color: white;
+}

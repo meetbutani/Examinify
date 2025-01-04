@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "../assets/css/ManageQuestions.css";
-import EditQuestion from "./EditQuestion";
+import "../assets/css/ManageProgrammingQuestion.css";
+import EditProgrammingQuestion from "./EditProgrammingQuestion";
 
-const ManageQuestions = () => {
+const ManageProgrammingQuestion = () => {
   const [questions, setQuestions] = useState([]);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
-  const [categoryFilter, setCategoryFilter] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("");
   const [message, setMessage] = useState("");
   const [editQuestionId, setEditQuestionId] = useState(null);
@@ -14,13 +13,13 @@ const ManageQuestions = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetchAllQuestions();
+    fetchProgrammingQuestions();
   }, []);
 
-  const fetchAllQuestions = async () => {
+  const fetchProgrammingQuestions = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8081/api/admin/questions",
+        "http://localhost:8081/api/admin/programmingQuestions",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -29,14 +28,14 @@ const ManageQuestions = () => {
       );
       setQuestions(response.data);
     } catch (error) {
-      setMessage("Failed to fetch questions.");
+      setMessage("Failed to fetch programming questions.");
     }
   };
 
   const handleDeleteQuestion = async (questionId) => {
     try {
       await axios.delete(
-        `http://localhost:8081/api/admin/deleteQuestion/${questionId}`,
+        `http://localhost:8081/api/admin/deleteProgrammingQuestion/${questionId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -44,7 +43,7 @@ const ManageQuestions = () => {
         }
       );
       setMessage("Question deleted successfully.");
-      fetchAllQuestions(); // Refresh question list
+      fetchProgrammingQuestions();
     } catch (error) {
       setMessage("Failed to delete question.");
     }
@@ -53,7 +52,7 @@ const ManageQuestions = () => {
   const handleDeleteMultipleQuestions = async () => {
     try {
       await axios.delete(
-        "http://localhost:8081/api/admin/deleteMultipleQuestions",
+        "http://localhost:8081/api/admin/deleteMultipleProgrammingQuestions",
         {
           data: selectedQuestions,
           headers: {
@@ -62,7 +61,7 @@ const ManageQuestions = () => {
         }
       );
       setMessage("Selected questions deleted successfully.");
-      fetchAllQuestions(); // Refresh question list
+      fetchProgrammingQuestions();
     } catch (error) {
       setMessage("Failed to delete selected questions.");
     }
@@ -71,10 +70,9 @@ const ManageQuestions = () => {
   const handleFilter = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8081/api/admin/questions`,
+        `http://localhost:8081/api/admin/programmingQuestions`,
         {
           params: {
-            category: categoryFilter || undefined,
             difficulty: difficultyFilter || undefined,
           },
           headers: {
@@ -97,19 +95,11 @@ const ManageQuestions = () => {
   };
 
   return (
-    <div className="manage-questions-container">
-      <h2 className="manage-questions-heading">Manage Questions</h2>
-      <div className="filters-container">
-        <select
-          className="filter-select"
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-        >
-          <option value="">Filter by Category</option>
-          <option value="LOGICAL">Logical</option>
-          <option value="TECHNICAL">Technical</option>
-          <option value="PROGRAMMING">Programming</option>
-        </select>
+    <div className="manage-programming-container">
+      <h2 className="manage-programming-heading">
+        Manage Programming Questions
+      </h2>
+      <div className="filter-container">
         <select
           className="filter-select"
           value={difficultyFilter}
@@ -133,12 +123,11 @@ const ManageQuestions = () => {
       </button>
       {message && <p className="message-text">{message}</p>}
 
-      <table className="questions-table">
+      <table className="programming-questions-table">
         <thead>
           <tr>
             <th>Select</th>
-            <th>Question</th>
-            <th>Category</th>
+            <th>Title</th>
             <th>Difficulty</th>
             <th>Actions</th>
           </tr>
@@ -154,8 +143,7 @@ const ManageQuestions = () => {
                   onChange={() => handleSelectQuestion(question.id)}
                 />
               </td>
-              <td>{question.text}</td>
-              <td>{question.category}</td>
+              <td>{question.title}</td>
               <td>{question.difficulty}</td>
               <td>
                 <button
@@ -180,11 +168,11 @@ const ManageQuestions = () => {
       </table>
 
       {editQuestionId && (
-        <EditQuestion
+        <EditProgrammingQuestion
           question={questions.find((q) => q.id === editQuestionId)}
           onCancel={() => setEditQuestionId(null)}
           onSave={() => {
-            fetchAllQuestions();
+            fetchProgrammingQuestions();
             setEditQuestionId(null);
           }}
         />
@@ -193,4 +181,4 @@ const ManageQuestions = () => {
   );
 };
 
-export default ManageQuestions;
+export default ManageProgrammingQuestion;

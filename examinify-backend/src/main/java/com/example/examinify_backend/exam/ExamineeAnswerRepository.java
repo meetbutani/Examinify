@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface ExamineeAnswerRepository extends JpaRepository<ExamineeAnswer, Integer> {
-    List<ExamineeAnswer> findByExamineeIdAndExamId(String examineeId, Integer examId);
+    List<ExamineeAnswer> findByExamIdAndExamineeId(Integer examId, String examineeId);
 }

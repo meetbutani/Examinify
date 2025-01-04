@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "../assets/css/AddQuestion.css";
 
 const EditQuestion = ({ question, onCancel, onSave }) => {
   const [formData, setFormData] = useState({
@@ -48,14 +49,16 @@ const EditQuestion = ({ question, onCancel, onSave }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="add-question-form" onSubmit={handleSubmit}>
       <textarea
+        className="question-textarea"
         placeholder="Edit question text"
         value={formData.text}
         onChange={(e) => setFormData({ ...formData, text: e.target.value })}
         required
       />
       <select
+        className="question-select"
         value={formData.category}
         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
       >
@@ -64,6 +67,7 @@ const EditQuestion = ({ question, onCancel, onSave }) => {
         <option value="PROGRAMMING">Programming</option>
       </select>
       <select
+        className="question-select"
         value={formData.difficulty}
         onChange={(e) =>
           setFormData({ ...formData, difficulty: e.target.value })
@@ -76,6 +80,7 @@ const EditQuestion = ({ question, onCancel, onSave }) => {
       {[...Array(4)].map((_, index) => (
         <input
           key={"opt" + index}
+          className="option-input"
           type="text"
           placeholder={`Option ${index + 1}`}
           value={formData.options[index] || ""}
@@ -84,6 +89,7 @@ const EditQuestion = ({ question, onCancel, onSave }) => {
         />
       ))}
       <input
+        className="answer-input"
         type="text"
         placeholder="Correct Answer"
         value={formData.correctAnswer}
@@ -92,8 +98,14 @@ const EditQuestion = ({ question, onCancel, onSave }) => {
         }
         required
       />
-      <button type="submit">Save Changes</button>
-      <button type="button" onClick={onCancel}>
+      <button className="submit-button" type="submit">
+        Save Changes
+      </button>
+      <button
+        className="submit-button cancel-button"
+        type="button"
+        onClick={onCancel}
+      >
         Cancel
       </button>
     </form>

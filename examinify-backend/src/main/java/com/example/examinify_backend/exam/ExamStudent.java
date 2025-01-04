@@ -3,6 +3,8 @@ package com.example.examinify_backend.exam;
 import com.example.examinify_backend.student.StudentProfile;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
+
 @Entity
 @Table(
         name = "exam_student",
@@ -19,6 +21,12 @@ public class ExamStudent {
     @Column(name = "studentId", nullable = false)
     private String studentId;
 
+    @Column(name = "startedAt", nullable = true)
+    private Timestamp startedAt;
+
+    @Column(name = "ipAddress", nullable = true, length = 45)
+    private String ipAddress;
+
     @ManyToOne
     @JoinColumn(name = "examId", referencedColumnName = "id", insertable = false, updatable = false)
     private Exam exam;
@@ -26,6 +34,8 @@ public class ExamStudent {
     @ManyToOne
     @JoinColumn(name = "studentId", referencedColumnName = "studentId", insertable = false, updatable = false)
     private StudentProfile student;
+
+    // Getters and Setters
 
     public Integer getId() {
         return id;
@@ -49,6 +59,22 @@ public class ExamStudent {
 
     public void setStudentId(String studentId) {
         this.studentId = studentId;
+    }
+
+    public Timestamp getStartedAt() {
+        return startedAt;
+    }
+
+    public void setStartedAt(Timestamp startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     public Exam getExam() {

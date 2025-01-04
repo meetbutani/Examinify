@@ -1,0 +1,78 @@
+/* Login.css */
+
+/* Login container */
+.login-container {
+    background-color: #1e1e1e;
+    /* Slightly lighter dark for card */
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    /* Subtle shadow */
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Login heading */
+.login-heading {
+    text-align: center;
+    color: #ffffff;
+    /* White text for heading */
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* Login form */
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Input fields */
+.login-input {
+    width: 100%;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #333333;
+    /* Darker border */
+    border-radius: 5px;
+    background-color: #252525;
+    /* Dark input background */
+    color: #e0e0e0;
+    /* Light text for readability */
+    font-size: 16px;
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: #007bff;
+    /* Blue focus border */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Login button */
+.login-button {
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #007bff;
+    /* Bright blue button */
+    color: #ffffff;
+    /* White text */
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+    /* Darker blue on hover */
+}
+
+/* Error message */
+.login-error {
+    margin-top: 15px;
+    text-align: center;
+    color: #ff4d4d;
+    /* Red for error messages */
+    font-size: 14px;
+}

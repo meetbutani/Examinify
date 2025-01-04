@@ -64,5 +64,4 @@ public class AuthController {
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
-
 }

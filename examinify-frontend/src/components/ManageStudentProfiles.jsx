@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "../assets/css/ManageStudentProfiles.css";
 
 const ManageStudentProfiles = () => {
   const [students, setStudents] = useState([]);
@@ -7,7 +8,7 @@ const ManageStudentProfiles = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [collegeFilter, setCollegeFilter] = useState("");
   const [message, setMessage] = useState("");
-  const [editStudent, setEditStudent] = useState(null); // State for editing a student profile
+  const [editStudent, setEditStudent] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -74,7 +75,7 @@ const ManageStudentProfiles = () => {
         }
       );
       setMessage("Student deleted successfully.");
-      fetchAllStudents(); // Refresh student list
+      fetchAllStudents();
     } catch (error) {
       setMessage("Failed to delete student.");
     }
@@ -92,7 +93,7 @@ const ManageStudentProfiles = () => {
         }
       );
       setMessage("Selected students deleted successfully.");
-      fetchAllStudents(); // Refresh student list
+      fetchAllStudents();
     } catch (error) {
       setMessage("Failed to delete selected students.");
     }
@@ -106,7 +107,6 @@ const ManageStudentProfiles = () => {
     );
   };
 
-  // Handle update student profile
   const handleUpdateStudent = async () => {
     try {
       await axios.put(
@@ -119,72 +119,103 @@ const ManageStudentProfiles = () => {
         }
       );
       setMessage("Student profile updated successfully.");
-      fetchAllStudents(); // Refresh student list
-      setEditStudent(null); // Close the edit form
+      fetchAllStudents();
+      setEditStudent(null);
     } catch (error) {
       setMessage("Failed to update student profile.");
     }
   };
 
-  // Handle changes in the edit form
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditStudent((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
-    <div>
-      <h2>Manage Student Profiles</h2>
-      <div>
+    <div className="manage-container">
+      <h2 className="manage-heading">Manage Student Profiles</h2>
+      <div className="manage-filters">
         <input
           type="text"
+          className="filter-input"
           placeholder="Search by name or email"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button onClick={handleSearch}>Search</button>
-        <br />
+        <button className="filter-button" onClick={handleSearch}>
+          Search
+        </button>
         <input
           type="text"
+          className="filter-input"
           placeholder="Filter by College"
           value={collegeFilter}
           onChange={(e) => setCollegeFilter(e.target.value)}
         />
-        <button onClick={handleFilter}>Filter</button>
+        <button className="filter-button" onClick={handleFilter}>
+          Filter
+        </button>
       </div>
-      <br />
       <button
+        className="delete-button"
         onClick={handleDeleteMultipleStudents}
         disabled={selectedStudents.length === 0}
       >
         Delete Selected Students
       </button>
-      <br />
-      {message && <p>{message}</p>}
-      <ul>
-        {students.map((student) => (
-          <li key={student.studentId}>
-            <input
-              type="checkbox"
-              checked={selectedStudents.includes(student.studentId)}
-              onChange={() => handleSelectStudent(student.studentId)}
-            />
-            {student.studentId} | {student.firstname} {student.lastname} | {" "}
-            {student.email} | {student.universityCollegeName}
-            <button onClick={() => handleDeleteStudent(student.studentId)}>
-              Delete
-            </button>
-            <button onClick={() => setEditStudent(student)}>Edit</button>
-          </li>
-        ))}
-      </ul>
-
-      {/* Edit Student Profile Form */}
+      {message && <p className="message-text">{message}</p>}
+      <table className="students-table">
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>University/College</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map((student) => (
+            <tr key={student.studentId}>
+              <td>
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  checked={selectedStudents.includes(student.studentId)}
+                  onChange={() => handleSelectStudent(student.studentId)}
+                />
+              </td>
+              <td>{student.studentId}</td>
+              <td>{student.firstname}</td>
+              <td>{student.lastname}</td>
+              <td>{student.email}</td>
+              <td>{student.universityCollegeName}</td>
+              <td>
+                <button
+                  className="action-button delete-action"
+                  onClick={() => handleDeleteStudent(student.studentId)}
+                >
+                  Delete
+                </button>
+                <button
+                  className="action-button edit-action"
+                  onClick={() => setEditStudent(student)}
+                >
+                  Edit
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       {editStudent && (
-        <div>
+        <div className="edit-container">
           <h3>Edit Student Profile</h3>
           <input
             type="text"
+            className="edit-input"
             name="firstname"
             value={editStudent.firstname}
             onChange={handleEditChange}
@@ -192,6 +223,7 @@ const ManageStudentProfiles = () => {
           />
           <input
             type="text"
+            className="edit-input"
             name="lastname"
             value={editStudent.lastname}
             onChange={handleEditChange}
@@ -199,6 +231,7 @@ const ManageStudentProfiles = () => {
           />
           <input
             type="email"
+            className="edit-input"
             name="email"
             value={editStudent.email}
             onChange={handleEditChange}
@@ -206,13 +239,24 @@ const ManageStudentProfiles = () => {
           />
           <input
             type="text"
+            className="edit-input"
             name="universityCollegeName"
             value={editStudent.universityCollegeName}
             onChange={handleEditChange}
             placeholder="University/College Name"
           />
-          <button onClick={handleUpdateStudent}>Update Profile</button>
-          <button onClick={() => setEditStudent(null)}>Cancel</button>
+          <button
+            className="edit-button update-button"
+            onClick={handleUpdateStudent}
+          >
+            Update Profile
+          </button>
+          <button
+            className="edit-button cancel-button"
+            onClick={() => setEditStudent(null)}
+          >
+            Cancel
+          </button>
         </div>
       )}
     </div>

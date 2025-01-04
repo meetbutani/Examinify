@@ -1,0 +1,82 @@
+/* AddQuestion.css */
+
+/* General form styling */
+.add-question-form {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Textarea for question text */
+.question-textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    background-color: #252525;
+    border: 1px solid #333333;
+    color: #e0e0e0;
+    border-radius: 5px;
+    resize: none;
+}
+
+/* Dropdown select fields */
+.question-select {
+    width: 100%;
+    padding: 10px;
+    background-color: #252525;
+    border: 1px solid #333333;
+    color: #e0e0e0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Input fields for options */
+.option-input {
+    width: 100%;
+    padding: 10px;
+    background-color: #252525;
+    border: 1px solid #333333;
+    color: #e0e0e0;
+    border-radius: 5px;
+}
+
+/* Input for correct answer */
+.answer-input {
+    width: 100%;
+    padding: 10px;
+    background-color: #252525;
+    border: 1px solid #333333;
+    color: #e0e0e0;
+    border-radius: 5px;
+}
+
+/* Submit button */
+.submit-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}
+
+.cancel-button {
+    background-color: #ff4d4d !important;
+}
+
+.cancel-button:hover {
+    background-color: #b63939 !important;
+}

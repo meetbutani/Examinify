@@ -1,0 +1,77 @@
+/* CreateStudentProfile.css */
+
+/* Container for the form */
+.profile-container {
+    max-width: 500px;
+    margin: 50px auto;
+    background-color: #1e1e1e;
+    /* Slightly lighter dark for container */
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Heading */
+.profile-heading {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #ffffff;
+    /* White text for heading */
+}
+
+/* Form styling */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Input fields */
+.profile-input {
+    width: 100%;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #333333;
+    /* Darker border */
+    border-radius: 5px;
+    background-color: #252525;
+    /* Dark input background */
+    color: #e0e0e0;
+    /* Light text for readability */
+    font-size: 16px;
+}
+
+.profile-input:focus {
+    outline: none;
+    border-color: #007bff;
+    /* Blue focus border */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Button */
+.profile-button {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #007bff;
+    /* Bright blue button */
+    color: #ffffff;
+    /* White text */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.profile-button:hover {
+    background-color: #0056b3;
+    /* Darker blue on hover */
+}
+
+/* Success/Error message */
+.profile-message {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    color: #ff4d4d;
+    /* Error red (you can change based on message) */
+}

@@ -1,0 +1,128 @@
+/* ManageStudentProfiles.css */
+
+/* General styles */
+.manage-container {
+    max-width: 1200px;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    margin: 50px auto;
+    padding: 30px 40px;
+}
+
+.manage-heading {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Filters */
+.manage-filters {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #252525;
+    color: #e0e0e0;
+    border: 1px solid #333333;
+}
+
+.filter-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.filter-button:hover {
+    background-color: #0056b3;
+}
+
+/* Table */
+.students-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+.students-table th,
+.students-table td {
+    border: 1px solid #333333;
+    padding: 10px;
+    text-align: left;
+}
+
+.students-table th {
+    background-color: #252525;
+}
+
+.students-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+/* Buttons */
+.delete-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.action-button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.delete-action {
+    background-color: #ff4d4d;
+}
+
+.edit-action {
+    background-color: #4caf50;
+}
+
+.edit-container {
+    margin-top: 20px;
+}
+
+.edit-input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    background-color: #252525;
+    color: white;
+    border: 1px solid #333333;
+}
+
+.edit-button {
+    margin-right: 10px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.update-button {
+    background-color: #007bff;
+}
+
+.cancel-button {
+    background-color: #ff4d4d;
+}

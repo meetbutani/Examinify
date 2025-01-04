@@ -29,6 +29,9 @@ public class ExamController {
     private ExamQuestionRepository examQuestionRepository;
 
     @Autowired
+    private ExamProgrammingQuestionRepository examProgrammingQuestionRepository;
+
+    @Autowired
     private QuestionRepository questionRepository;
 
     @Autowired
@@ -39,6 +42,8 @@ public class ExamController {
 
     @Autowired
     private ExamStudentRepository examStudentRepository;
+    @Autowired
+    private ProgrammingQuestionRepository programmingQuestionRepository;
 
     // Get all student profiles
     @GetMapping("/")
@@ -87,6 +92,15 @@ public class ExamController {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Exam not found."));
     }
 
+    @DeleteMapping("/{examId}")
+    public ResponseEntity<String> deleteExam(@PathVariable Integer examId) {
+        return examRepository.findById(examId)
+                .map(exam -> {
+                    examRepository.delete(exam);
+                    return ResponseEntity.ok("Exam deleted successfully.");
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Exam not found."));
+    }
 
     @PostMapping("/addQuestion")
     public ResponseEntity<String> addQuestionToExam(@RequestBody ExamQuestion examQuestion) {
@@ -94,6 +108,15 @@ public class ExamController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Question already added to this exam.");
         }
         examQuestionRepository.save(examQuestion);
+        return ResponseEntity.ok("Question added to exam successfully.");
+    }
+
+    @PostMapping("/addProgrammingQuestion")
+    public ResponseEntity<String> addProgrammingQuestionToExam(@RequestBody ExamProgrammingQuestion examQuestion) {
+        if (examProgrammingQuestionRepository.existsByExamIdAndQuestionId(examQuestion.getExamId(), examQuestion.getQuestionId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Question already added to this exam.");
+        }
+        examProgrammingQuestionRepository.save(examQuestion);
         return ResponseEntity.ok("Question added to exam successfully.");
     }
 
@@ -110,14 +133,38 @@ public class ExamController {
         return ResponseEntity.ok("All changes saved successfully.");
     }
 
+    @PatchMapping("/updateProgrammingQuestionOrder")
+    public ResponseEntity<String> updateProgrammingQuestionOrder(@RequestBody List<UpdateQuestionOrderDto> dtos) {
+        for (UpdateQuestionOrderDto dto : dtos) {
+            ExamProgrammingQuestion examProgrammingQuestion = examProgrammingQuestionRepository.findById(dto.getExamQuestionId())
+                    .orElseThrow(() -> new RuntimeException("Exam Question not found"));
+
+            examProgrammingQuestion.setQuestionOrder(dto.getNewOrder());
+            examProgrammingQuestion.setMarks(dto.getMarks());
+            examProgrammingQuestionRepository.save(examProgrammingQuestion);
+        }
+        return ResponseEntity.ok("All changes saved successfully.");
+    }
+
     @GetMapping("/{examId}/questions")
     public ResponseEntity<List<ExamQuestion>> getExamQuestions(@PathVariable Integer examId) {
         return ResponseEntity.ok(examQuestionRepository.findByExamIdOrderByQuestionOrder(examId));
     }
 
+    @GetMapping("/{examId}/programming-questions")
+    public ResponseEntity<List<ExamProgrammingQuestion>> getExamProgrammingQuestions(@PathVariable Integer examId) {
+        return ResponseEntity.ok(examProgrammingQuestionRepository.findByExamIdOrderByQuestionOrder(examId));
+    }
+
     @DeleteMapping("/removeQuestion/{examQuestionId}")
     public ResponseEntity<Void> removeQuestionFromExam(@PathVariable Integer examQuestionId) {
         examQuestionRepository.deleteById(examQuestionId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/removeProgrammingQuestion/{examQuestionId}")
+    public ResponseEntity<Void> removeProgrammingQuestionFromExam(@PathVariable Integer examQuestionId) {
+        examProgrammingQuestionRepository.deleteById(examQuestionId);
         return ResponseEntity.noContent().build();
     }
 
@@ -155,6 +202,44 @@ public class ExamController {
                 .collect(Collectors.toList());
         examStudentRepository.saveAll(examStudents);
         return ResponseEntity.ok("Students assigned successfully.");
+    }
+
+    // Get results for a specific exam
+    @GetMapping("/results/{examId}")
+    public ResponseEntity<?> getResultsByExamId(@PathVariable Integer examId) {
+        List<ExamResult> results = examResultRepository.findByExamId(examId);
+        if (results.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No results found for this exam.");
+        }
+        return ResponseEntity.ok(results);
+    }
+
+    // Filter results by passed/failed
+    @GetMapping("/results/{examId}/filter")
+    public ResponseEntity<?> getResultsByFilter(@PathVariable Integer examId,
+                                                @RequestParam(required = false) Boolean passed,
+                                                @RequestParam(required = false) String startDate,
+                                                @RequestParam(required = false) String endDate) {
+        List<ExamResult> results;
+
+        if (startDate != null && endDate != null) {
+            Timestamp start = Timestamp.valueOf(startDate);
+            Timestamp end = Timestamp.valueOf(endDate);
+            if (passed != null) {
+                results = examResultRepository.findByExamIdAndIsPassedAndSubmittedOnBetween(examId, passed, start, end);
+            } else {
+                results = examResultRepository.findByExamIdAndSubmittedOnBetween(examId, start, end);
+            }
+        } else if (passed != null) {
+            results = examResultRepository.findByExamIdAndIsPassed(examId, passed);
+        } else {
+            results = examResultRepository.findByExamId(examId);
+        }
+
+        if (results.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No matching results found.");
+        }
+        return ResponseEntity.ok(results);
     }
 
     @PostMapping("/{examId}/designTest")
@@ -218,4 +303,54 @@ public class ExamController {
         return pool.stream().limit(count).collect(Collectors.toList());
     }
 
+    @PostMapping("/{examId}/designProgrammingTest")
+    public ResponseEntity<String> designProgrammingTest(
+            @PathVariable Integer examId,
+            @RequestBody Map<String, Integer> difficultyCounts) {
+
+        List<ProgrammingQuestion> allProgrammingQuestions = programmingQuestionRepository.findAll();
+
+        // Pick questions based on difficulty
+        List<ProgrammingQuestion> selectedQuestions = autoPickProgrammingQuestions(allProgrammingQuestions, difficultyCounts);
+
+        // Assign selected questions to the exam
+        int order = 1;
+        for (ProgrammingQuestion question : selectedQuestions) {
+            ExamProgrammingQuestion examProgrammingQuestion = new ExamProgrammingQuestion();
+            examProgrammingQuestion.setExamId(examId);
+            examProgrammingQuestion.setQuestionId(question.getId());
+            examProgrammingQuestion.setQuestionOrder(order++);
+            examProgrammingQuestionRepository.save(examProgrammingQuestion);
+        }
+
+        return ResponseEntity.ok("Programming test designed successfully.");
+    }
+
+    private List<ProgrammingQuestion> autoPickProgrammingQuestions(
+            List<ProgrammingQuestion> allQuestions,
+            Map<String, Integer> difficultyCounts) {
+
+        List<ProgrammingQuestion> selectedQuestions = new ArrayList<>();
+
+        // Group questions by difficulty
+        Map<Difficulty, List<ProgrammingQuestion>> questionsByDifficulty = allQuestions.stream()
+                .collect(Collectors.groupingBy(ProgrammingQuestion::getDifficulty));
+
+        // Pick questions for each difficulty level
+        for (String difficulty : difficultyCounts.keySet()) {
+            Difficulty difficultyEnum = Difficulty.valueOf(difficulty);
+            int count = difficultyCounts.get(difficulty);
+
+            List<ProgrammingQuestion> pool = questionsByDifficulty.getOrDefault(difficultyEnum, new ArrayList<>());
+
+            selectedQuestions.addAll(pickRandomProgrammingQuestions(pool, count));
+        }
+
+        return selectedQuestions;
+    }
+
+    private List<ProgrammingQuestion> pickRandomProgrammingQuestions(List<ProgrammingQuestion> pool, int count) {
+        Collections.shuffle(pool); // Shuffle for randomness
+        return pool.stream().limit(count).collect(Collectors.toList());
+    }
 }

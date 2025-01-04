@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "../assets/css/ExamDetails.css";
-import DesignTest from "./DesignTest";
+import "../assets/css/ExamDetailsProgramming.css"; // Import CSS file
+import DesignProgrammingTest from "./DesignProgrammingTest";
 
-const ExamDetails = ({ exam, onClose }) => {
+const ExamDetailsProgramming = ({ exam, onClose }) => {
   const [questions, setQuestions] = useState([]);
   const [questionOrder, setQuestionOrder] = useState(1);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
-  const [filters, setFilters] = useState({ category: "", difficulty: "" });
+  const [filters, setFilters] = useState({ difficulty: "" });
   const [editableExam, setEditableExam] = useState({ ...exam });
 
   const token = localStorage.getItem("token");
@@ -16,7 +16,7 @@ const ExamDetails = ({ exam, onClose }) => {
     setQuestions([]);
     setQuestionOrder(1);
     setSelectedQuestions([]);
-    setFilters({ category: "", difficulty: "" });
+    setFilters({ difficulty: "" });
     setEditableExam({ ...exam });
     fetchSelectedQuestions();
   }, [exam]);
@@ -36,7 +36,7 @@ const ExamDetails = ({ exam, onClose }) => {
   const fetchQuestions = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8081/api/admin/questions",
+        "http://localhost:8081/api/admin/programmingQuestions",
         {
           headers: { Authorization: `Bearer ${token}` },
           params: filters,
@@ -51,7 +51,7 @@ const ExamDetails = ({ exam, onClose }) => {
   const fetchSelectedQuestions = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8081/api/admin/exams/${exam.id}/questions`,
+        `http://localhost:8081/api/admin/exams/${exam.id}/programming-questions`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -65,7 +65,7 @@ const ExamDetails = ({ exam, onClose }) => {
   const addQuestionToExam = async (questionId) => {
     try {
       await axios.post(
-        `http://localhost:8081/api/admin/exams/addQuestion`,
+        `http://localhost:8081/api/admin/exams/addProgrammingQuestion`,
         { examId: exam.id, questionId, questionOrder, marks: 1 },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -78,7 +78,7 @@ const ExamDetails = ({ exam, onClose }) => {
   const deleteQuestionFromExam = async (examQuestionId) => {
     try {
       await axios.delete(
-        `http://localhost:8081/api/admin/exams/removeQuestion/${examQuestionId}`,
+        `http://localhost:8081/api/admin/exams/removeProgrammingQuestion/${examQuestionId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchSelectedQuestions();
@@ -92,9 +92,11 @@ const ExamDetails = ({ exam, onClose }) => {
       await axios.put(
         `http://localhost:8081/api/admin/exams/${editableExam.id}`,
         editableExam,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      onClose(); // Close the modal after successful update
+      onClose();
     } catch (error) {
       console.error("Failed to update exam.", error);
     }
@@ -104,12 +106,12 @@ const ExamDetails = ({ exam, onClose }) => {
     const updates = selectedQuestions.map((q) => ({
       examQuestionId: q.id,
       newOrder: q.questionOrder,
-      marks: parseInt(q.marks),
+      marks: parseInt(q.marks, 10),
     }));
 
     try {
       await axios.patch(
-        "http://localhost:8081/api/admin/exams/updateQuestionOrder",
+        "http://localhost:8081/api/admin/exams/updateProgrammingQuestionOrder",
         updates,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -144,7 +146,7 @@ const ExamDetails = ({ exam, onClose }) => {
             onChange={(e) =>
               setEditableExam((prev) => ({
                 ...prev,
-                duration: parseInt(e.target.value),
+                duration: parseInt(e.target.value, 10),
               }))
             }
           />
@@ -158,23 +160,10 @@ const ExamDetails = ({ exam, onClose }) => {
             onChange={(e) =>
               setEditableExam((prev) => ({
                 ...prev,
-                passingCriteria: parseInt(e.target.value),
+                passingCriteria: parseInt(e.target.value, 10),
               }))
             }
           />
-        </div>
-        <div className="form-group">
-          <label>Type:</label>
-          <select
-            className="exam-select"
-            value={editableExam.type}
-            onChange={(e) =>
-              setEditableExam((prev) => ({ ...prev, type: e.target.value }))
-            }
-          >
-            <option value="MCQ">MCQ</option>
-            <option value="PROGRAMMING">Programming</option>
-          </select>
         </div>
         <div className="form-group">
           <label>Start Date-Time:</label>
@@ -221,8 +210,17 @@ const ExamDetails = ({ exam, onClose }) => {
           Cancel
         </button>
       </div>
-      <h4>Selected Questions</h4>
+
+      <h4>Exam Questions</h4>
       <table className="questions-table">
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Title</th>
+            <th>Marks</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
         <tbody>
           {selectedQuestions.map((q) => (
             <tr key={q.id}>
@@ -242,7 +240,7 @@ const ExamDetails = ({ exam, onClose }) => {
                   }
                 />
               </td>
-              <td>{q.questionIdQuestion.text}</td>
+              <td>{q.questionIdProgrammingQuestion.title}</td>
               <td>
                 <input
                   className="marks-input"
@@ -252,7 +250,7 @@ const ExamDetails = ({ exam, onClose }) => {
                     setSelectedQuestions((prev) =>
                       prev.map((item) =>
                         item.id === q.id
-                          ? { ...item, marks: parseInt(e.target.value) }
+                          ? { ...item, marks: parseInt(e.target.value, 10) }
                           : item
                       )
                     )
@@ -274,12 +272,12 @@ const ExamDetails = ({ exam, onClose }) => {
       <button className="save-questions-button" onClick={saveChanges}>
         Save Question Changes
       </button>
+
       <h4>Available Questions</h4>
       <table className="questions-table">
         <thead>
           <tr>
-            <th>Question</th>
-            <th>Category</th>
+            <th>Title</th>
             <th>Difficulty</th>
             <th>Action</th>
           </tr>
@@ -287,8 +285,7 @@ const ExamDetails = ({ exam, onClose }) => {
         <tbody>
           {questions.map((q) => (
             <tr key={q.id}>
-              <td>{q.text}</td>
-              <td>{q.category}</td>
+              <td>{q.title}</td>
               <td>{q.difficulty}</td>
               <td>
                 <button
@@ -302,9 +299,9 @@ const ExamDetails = ({ exam, onClose }) => {
           ))}
         </tbody>
       </table>
-      <DesignTest examId={exam.id} />
+      <DesignProgrammingTest examId={exam.id} />
     </div>
   );
 };
 
-export default ExamDetails;
+export default ExamDetailsProgramming;

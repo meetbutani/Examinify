@@ -1,13 +1,12 @@
 package com.example.examinify_backend.exam;
 
-import com.example.examinify_backend.question.Question;
 import com.example.examinify_backend.user.UserAccount;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@IdClass(ExamineeAnswer.ExamineeAnswerId.class)
-public class ExamineeAnswer {
+@IdClass(ExamineeProgrammingAnswer.ExamineeProgrammingAnswerId.class)
+public class ExamineeProgrammingAnswer {
 
     @Id
     @Column(nullable = false)
@@ -21,8 +20,11 @@ public class ExamineeAnswer {
     @Column(nullable = false)
     private String examineeId;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String submittedCode; // Full code submission
+
     @Column(nullable = false)
-    private String selectedAnswer;
+    private Boolean isPassed; // Indicates if the submitted code is correct
 
     @ManyToOne
     @JoinColumn(name = "examId", referencedColumnName = "id", insertable = false, updatable = false)
@@ -30,14 +32,13 @@ public class ExamineeAnswer {
 
     @ManyToOne
     @JoinColumn(name = "questionId", referencedColumnName = "id", insertable = false, updatable = false)
-    private Question question;
+    private ProgrammingQuestion programmingQuestion;
 
     @ManyToOne
     @JoinColumn(name = "examineeId", referencedColumnName = "username", insertable = false, updatable = false)
     private UserAccount examinee;
 
-    // Getters and setters
-
+    // Getters and Setters
     public Integer getExamId() {
         return examId;
     }
@@ -62,12 +63,20 @@ public class ExamineeAnswer {
         this.examineeId = examineeId;
     }
 
-    public String getSelectedAnswer() {
-        return selectedAnswer;
+    public String getSubmittedCode() {
+        return submittedCode;
     }
 
-    public void setSelectedAnswer(String selectedAnswer) {
-        this.selectedAnswer = selectedAnswer;
+    public void setSubmittedCode(String submittedCode) {
+        this.submittedCode = submittedCode;
+    }
+
+    public Boolean getIsPassed() {
+        return isPassed;
+    }
+
+    public void setIsPassed(Boolean isPassed) {
+        this.isPassed = isPassed;
     }
 
     public Exam getExam() {
@@ -78,12 +87,12 @@ public class ExamineeAnswer {
         this.exam = exam;
     }
 
-    public Question getQuestion() {
-        return question;
+    public ProgrammingQuestion getProgrammingQuestion() {
+        return programmingQuestion;
     }
 
-    public void setQuestion(Question question) {
-        this.question = question;
+    public void setProgrammingQuestion(ProgrammingQuestion programmingQuestion) {
+        this.programmingQuestion = programmingQuestion;
     }
 
     public UserAccount getExaminee() {
@@ -95,15 +104,15 @@ public class ExamineeAnswer {
     }
 
     // Embedded static class for composite primary key
-    public static class ExamineeAnswerId implements Serializable {
+    public static class ExamineeProgrammingAnswerId implements Serializable {
         private Integer examId;
         private Integer questionId;
         private String examineeId;
 
         // Default constructor, equals(), and hashCode()
-        public ExamineeAnswerId() {}
+        public ExamineeProgrammingAnswerId() {}
 
-        public ExamineeAnswerId(Integer examId, Integer questionId, String examineeId) {
+        public ExamineeProgrammingAnswerId(Integer examId, Integer questionId, String examineeId) {
             this.examId = examId;
             this.questionId = questionId;
             this.examineeId = examineeId;
@@ -113,7 +122,7 @@ public class ExamineeAnswer {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            ExamineeAnswerId that = (ExamineeAnswerId) o;
+            ExamineeProgrammingAnswerId that = (ExamineeProgrammingAnswerId) o;
             return examId.equals(that.examId) &&
                     questionId.equals(that.questionId) &&
                     examineeId.equals(that.examineeId);

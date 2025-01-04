@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "../assets/css/AssignStudents.css";
 
 const AssignStudents = ({ examId }) => {
   const [allStudents, setAllStudents] = useState([]);
   const [examStudents, setExamStudents] = useState([]);
-  const [selectedStudents, setSelectedStudents] = useState([]); // For assigning
-  const [selectedForDelete, setSelectedForDelete] = useState([]); // For deletion
-  const [searchQuery, setSearchQuery] = useState(""); // For filtering
+  const [selectedStudents, setSelectedStudents] = useState([]);
+  const [selectedForDelete, setSelectedForDelete] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -113,17 +114,18 @@ const AssignStudents = ({ examId }) => {
   );
 
   return (
-    <div>
-      <h3>Assign Students</h3>
+    <div className="assign-students-container">
+      <h3 className="assign-students-heading">Assign Students</h3>
       <input
+        className="search-input"
         type="text"
         placeholder="Search students..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
 
-      <h4>Assigned Students</h4>
-      <table>
+      <h4 className="section-title">Assigned Students</h4>
+      <table className="students-table">
         <thead>
           <tr>
             <th>Select</th>
@@ -160,6 +162,7 @@ const AssignStudents = ({ examId }) => {
               <td>{student.universityCollegeName}</td>
               <td>
                 <button
+                  className="remove-button"
                   onClick={() => deleteAssignedStudents([student.studentId])}
                 >
                   Remove
@@ -169,12 +172,15 @@ const AssignStudents = ({ examId }) => {
           ))}
         </tbody>
       </table>
-      <button onClick={() => deleteAssignedStudents(selectedForDelete)}>
+      <button
+        className="action-button"
+        onClick={() => deleteAssignedStudents(selectedForDelete)}
+      >
         Remove Selected
       </button>
 
-      <h4>Available Students</h4>
-      <table>
+      <h4 className="section-title">Available Students</h4>
+      <table className="students-table">
         <thead>
           <tr>
             <th>Select</th>
@@ -212,7 +218,9 @@ const AssignStudents = ({ examId }) => {
           ))}
         </tbody>
       </table>
-      <button onClick={assignStudents}>Assign</button>
+      <button className="action-button" onClick={assignStudents}>
+        Assign
+      </button>
     </div>
   );
 };

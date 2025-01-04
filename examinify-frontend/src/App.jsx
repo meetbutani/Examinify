@@ -14,6 +14,8 @@ import ManageStudentProfiles from "./components/ManageStudentProfiles";
 import AddQuestion from "./components/AddQuestion";
 import ManageQuestions from "./components/ManageQuestions";
 import ManageExams from "./components/ManageExams";
+import ManageProgrammingQuestion from "./components/ManageProgrammingQuestions";
+import AddProgrammingQuestion from "./components/AddProgrammingQuestion";
 
 const App = () => {
   return (
@@ -51,6 +53,22 @@ const App = () => {
           element={
             <PermissionGuard requiredPermission={"ADMIN"}>
               <ManageQuestions />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/AddProgrammingQuestion"
+          element={
+            <PermissionGuard requiredPermission={"ADMIN"}>
+              <AddProgrammingQuestion />
+            </PermissionGuard>
+          }
+        />
+        <Route
+          path="/ManageProgrammingQuestions"
+          element={
+            <PermissionGuard requiredPermission={"ADMIN"}>
+              <ManageProgrammingQuestion />
             </PermissionGuard>
           }
         />
