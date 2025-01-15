@@ -75,3 +75,35 @@
     color: #ff4d4d;
     /* Error red (you can change based on message) */
 }
+
+.import-form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.template-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.template-heading {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #e0e0e0;
+}
+
+.template-button {
+    padding: 10px 20px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.template-button:hover {
+    background-color: #1e88e5;
+}

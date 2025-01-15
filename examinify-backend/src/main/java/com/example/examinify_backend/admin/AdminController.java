@@ -13,8 +13,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +55,30 @@ public class AdminController {
         studentProfileRepository.save(studentProfile);
 
         return ResponseEntity.ok("Student profile created successfully");
+    }
+
+    @PostMapping("/importStudentData")
+    public ResponseEntity<String> importStudentData(@RequestBody List<StudentProfile> students) {
+        try {
+            for (StudentProfile student : students) {
+                String username = student.getEnrollmentNo() + "@" + student.getUniversityCollegeName();
+                if (!userRepository.existsById(username)) {
+                    UserAccount userAccount = new UserAccount();
+                    userAccount.setUsername(username);
+                    userAccount.setPassword(passwordEncoder.encode(student.getEnrollmentNo())); // Set password as enrollment number
+                    userAccount.setRole(Role.EXAMINEE);
+                    userRepository.save(userAccount);
+
+                    student.setStudentId(username);
+                    student.setCreatedBy("admin");
+                    student.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+                    studentProfileRepository.save(student);
+                }
+            }
+            return ResponseEntity.ok("Student data imported successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error importing data.");
+        }
     }
 
     // Get all student profiles
