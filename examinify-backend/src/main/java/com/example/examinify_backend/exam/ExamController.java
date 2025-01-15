@@ -214,6 +214,34 @@ public class ExamController {
         return ResponseEntity.ok(results);
     }
 
+    @GetMapping("/results/{examId}/summary")
+    public ResponseEntity<?> getExamSummary(@PathVariable Integer examId) {
+        long totalStudents = examStudentRepository.countByExamId(examId);
+        long totalPassed = examResultRepository.countByExamIdAndIsPassed(examId, true);
+        long totalFailed = totalStudents - totalPassed;
+
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("totalStudents", totalStudents);
+        summary.put("totalPassed", totalPassed);
+        summary.put("totalFailed", totalFailed);
+
+        return ResponseEntity.ok(summary);
+    }
+
+    @GetMapping("/{examId}/not-attempted")
+    public ResponseEntity<?> getStudentsNotAttempted(@PathVariable Integer examId) {
+        List<String> allAssignedStudentIds = examStudentRepository.findStudentIdsByExamId(examId);
+        List<String> studentsAttempted = examResultRepository.findStudentIdsByExamId(examId);
+
+        allAssignedStudentIds.removeAll(studentsAttempted);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalNotAttempted", allAssignedStudentIds.size());
+        result.put("students", allAssignedStudentIds);
+
+        return ResponseEntity.ok(result);
+    }
+
     // Filter results by passed/failed
     @GetMapping("/results/{examId}/filter")
     public ResponseEntity<?> getResultsByFilter(@PathVariable Integer examId,
